@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CollapsingSection</string>
+    <string name="str_hide">Hide</string>
+    <string name="str_show_all_items">Show all items</string>
+</resources>
