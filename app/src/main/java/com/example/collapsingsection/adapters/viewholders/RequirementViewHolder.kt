@@ -20,6 +20,12 @@ class RequirementViewHolder(
     private var tvReqSubtitle: TextView? = null
 
     init {
+        itemView.apply {
+            layoutParams = RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
         tvReqTitle = itemView.findViewById(R.id.requirementTitleTextView)
         tvReqSubtitle = itemView.findViewById(R.id.requirementSubtitleTextView)
     }

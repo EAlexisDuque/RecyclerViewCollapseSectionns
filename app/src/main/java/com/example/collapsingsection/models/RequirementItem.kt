@@ -9,5 +9,6 @@ data class RequirementItem(
     val itemTag: String,
     val title: String,
     val subtitle: String,
-    val requirementsList: List<Requirement>
+    val requirementsList: List<Requirement>,
+    val startCollapsed: Boolean = true
 )

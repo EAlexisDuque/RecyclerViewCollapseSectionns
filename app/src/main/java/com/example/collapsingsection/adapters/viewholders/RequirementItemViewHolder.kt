@@ -10,10 +10,8 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.example.collapsingsection.R
 import com.example.collapsingsection.adapters.RequirementAdapter
-import com.example.collapsingsection.adapters.RequirementSectionAdapter
 import com.example.collapsingsection.models.RequirementItem
 
 /**
@@ -23,35 +21,33 @@ import com.example.collapsingsection.models.RequirementItem
  */
 class RequirementItemViewHolder(
     inflater: LayoutInflater, private val parent: ViewGroup
-) : RecyclerView.ViewHolder(inflater.inflate(R.layout.requirement_item_template, parent, false)),
-    RequirementSectionAdapter.CollapseElementsListener {
+) : RecyclerView.ViewHolder(inflater.inflate(R.layout.requirement_item_template, parent, false)) {
 
+    //<editor-fold desc="VARIABLES">
     private var tvReqTag: TextView? = null
     private var tvReqTitle: TextView? = null
     private var tvReqSubtitle: TextView? = null
+    private var tvFooter: TextView? = null
     private var rvReqList: RecyclerView? = null
-    private var footer: ImageView? = null
+    private var ivFooter: ImageView? = null
+    private var requirementsHeight = 0
+    private var elementsAreCollapsing = false
+    //</editor-fold>
 
     init {
         tvReqTag = itemView.findViewById(R.id.requirementItemTagTextView)
         tvReqTitle = itemView.findViewById(R.id.requirementSectionTitleTextView)
         tvReqSubtitle = itemView.findViewById(R.id.requirementSectionSubtitleTextView)
         rvReqList = itemView.findViewById(R.id.requirementsListRecyclerView)
-        footer = itemView.findViewById(R.id.footerImageView)
+        ivFooter = itemView.findViewById(R.id.footerImageView)
+        tvFooter = itemView.findViewById(R.id.footerTextView)
     }
 
-    fun bind(
-        requirementItem: RequirementItem,
-        requirementSectionAdapter: RequirementSectionAdapter? = null,
-        heightOfItem: (height: Int?) -> Unit
-    ) {
-        requirementSectionAdapter?.setCollapseElementsListener(this)
+    fun bind(requirementItem: RequirementItem) {
         tvReqTag?.text = requirementItem.itemTag
         tvReqTitle?.text = requirementItem.title
         tvReqSubtitle?.text = requirementItem.subtitle
-        footer?.setOnClickListener {
-            requirementSectionAdapter?.collapseElements()
-        }
+        tvFooter?.text = "Show all elements"
 
         rvReqList?.apply {
             layoutManager = LinearLayoutManager(context)
@@ -60,13 +56,42 @@ class RequirementItemViewHolder(
 
         (parent.context as? AppCompatActivity)?.windowManager?.defaultDisplay?.let { display ->
             rvReqList?.measure(display.width, display.height)
-            heightOfItem(rvReqList?.measuredHeight)
+            requirementsHeight = rvReqList?.measuredHeight ?: 0
         }
+
+        if (requirementItem.startCollapsed) {
+            elementsAreCollapsing = true
+            updateRecyclerViewHeight()
+            rotateRowIndicator()
+        }
+
+
+        ivFooter?.setOnClickListener { collapseElements(requirementsHeight) }
     }
 
-    override fun collapseElements(from: Int, to: Int, isCollapsed: Boolean) {
+    private fun collapseElements(requirementsHeight: Int) {
+        if (elementsAreCollapsing) {
+            collapseElements(0, requirementsHeight, false)
+        } else {
+            collapseElements(requirementsHeight, 0, true)
+        }
+
+        elementsAreCollapsing = !elementsAreCollapsing
+    }
+
+    private fun collapseElements(from: Int, to: Int, isCollapsed: Boolean) {
+        tvFooter?.text = if (isCollapsed) "Show all elements" else "Hide"
+
         val animator = ValueAnimator.ofInt(from, to).setDuration(300)?.apply {
-            addUpdateListener { updateRecyclerViewHeight(it.animatedValue as Int) }
+            addUpdateListener {
+                updateRecyclerViewHeight(it.animatedValue as Int)
+                rotateRowIndicator(
+                    rotationValue(
+                        it.animatedValue as Int,
+                        if (from > to) from else to
+                    )
+                )
+            }
         } ?: return
 
         startValueAnimator(animator)
@@ -80,10 +105,18 @@ class RequirementItemViewHolder(
         }
     }
 
-    private fun updateRecyclerViewHeight(height: Int) {
+    private fun updateRecyclerViewHeight(height: Int = 0) {
         rvReqList?.apply {
             layoutParams?.height = height
             requestLayout()
         }
+    }
+
+    private fun rotateRowIndicator(rotation: Float = 0f) {
+        ivFooter?.rotation = -rotation
+    }
+
+    private fun rotationValue(currentValue: Int, limit: Int): Float {
+        return (180f * ((currentValue * 100f) / limit)) / 100f
     }
 }
