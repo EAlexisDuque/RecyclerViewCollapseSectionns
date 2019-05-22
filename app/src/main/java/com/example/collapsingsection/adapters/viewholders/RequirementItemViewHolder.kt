@@ -47,7 +47,6 @@ class RequirementItemViewHolder(
         tvReqTag?.text = requirementItem.itemTag
         tvReqTitle?.text = requirementItem.title
         tvReqSubtitle?.text = requirementItem.subtitle
-        tvFooter?.text = "Show all elements"
 
         rvReqList?.apply {
             layoutManager = LinearLayoutManager(context)
@@ -65,6 +64,7 @@ class RequirementItemViewHolder(
             rotateRowIndicator()
         }
 
+        updateFooterText(elementsAreCollapsing)
 
         ivFooter?.setOnClickListener { collapseElements(requirementsHeight) }
     }
@@ -80,7 +80,7 @@ class RequirementItemViewHolder(
     }
 
     private fun collapseElements(from: Int, to: Int, isCollapsed: Boolean) {
-        tvFooter?.text = if (isCollapsed) "Show all elements" else "Hide"
+        updateFooterText(isCollapsed)
 
         val animator = ValueAnimator.ofInt(from, to).setDuration(300)?.apply {
             addUpdateListener {
@@ -118,5 +118,9 @@ class RequirementItemViewHolder(
 
     private fun rotationValue(currentValue: Int, limit: Int): Float {
         return (180f * ((currentValue * 100f) / limit)) / 100f
+    }
+
+    private fun updateFooterText(isCollapsed: Boolean) {
+        tvFooter?.text = if (isCollapsed) "Show all elements" else "Hide"
     }
 }
