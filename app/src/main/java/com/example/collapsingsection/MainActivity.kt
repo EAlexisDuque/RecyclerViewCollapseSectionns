@@ -29,6 +29,62 @@ class MainActivity : AppCompatActivity() {
             listOf(
                 Requirement("Advanced cardiovascular", "Board"),
                 Requirement("Advanced cardiovascular", "Board")
+            ),
+            false
+        ),
+        RequirementItem(
+            "APPLIED",
+            "Physical therapist",
+            "Requirements satisfied",
+            listOf(
+                Requirement("Advanced cardiovascular", "Board"),
+                Requirement("Advanced cardiovascular", "Board")
+            ),
+            false
+        ),
+        RequirementItem(
+            "APPLIED",
+            "Physical therapist",
+            "Requirements satisfied",
+            listOf(
+                Requirement("Advanced cardiovascular", "Board"),
+                Requirement("Advanced cardiovascular", "Board")
+            )
+        ),
+        RequirementItem(
+            "APPLIED",
+            "Physical therapist",
+            "Requirements satisfied",
+            listOf(
+                Requirement("Advanced cardiovascular", "Board"),
+                Requirement("Advanced cardiovascular", "Board")
+            )
+        ),
+        RequirementItem(
+            "APPLIED",
+            "Physical therapist",
+            "Requirements satisfied",
+            listOf(
+                Requirement("Advanced cardiovascular", "Board"),
+                Requirement("Advanced cardiovascular", "Board")
+            )
+        ),
+        RequirementItem(
+            "APPLIED",
+            "Physical therapist",
+            "Requirements satisfied",
+            listOf(
+                Requirement("Advanced cardiovascular", "Board"),
+                Requirement("Advanced cardiovascular", "Board")
+            )
+        ),
+        RequirementItem(
+            "APPLIED",
+            "Physical therapist",
+            "Requirements satisfied",
+            listOf(
+                Requirement("Advanced cardiovascular", "Board"),
+                Requirement("Advanced cardiovascular", "Board")
             )
         ),
         RequirementItem(

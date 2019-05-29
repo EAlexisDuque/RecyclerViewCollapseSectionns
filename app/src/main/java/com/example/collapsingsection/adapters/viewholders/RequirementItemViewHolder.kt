@@ -2,12 +2,14 @@ package com.example.collapsingsection.adapters.viewholders
 
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
+import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.collapsingsection.R
@@ -28,8 +30,10 @@ class RequirementItemViewHolder(
     private var tvReqTitle: TextView? = null
     private var tvReqSubtitle: TextView? = null
     private var tvFooter: TextView? = null
+    private var flReqList: FrameLayout? = null
     private var rvReqList: RecyclerView? = null
     private var ivFooter: ImageView? = null
+    private var clFooter: ConstraintLayout? = null
     private var requirementsHeight = 0
     private var elementsAreCollapsing = false
     //</editor-fold>
@@ -39,7 +43,9 @@ class RequirementItemViewHolder(
         tvReqTitle = itemView.findViewById(R.id.requirementSectionTitleTextView)
         tvReqSubtitle = itemView.findViewById(R.id.requirementSectionSubtitleTextView)
         rvReqList = itemView.findViewById(R.id.requirementsListRecyclerView)
+        flReqList = itemView.findViewById(R.id.requirementsListContainer)
         ivFooter = itemView.findViewById(R.id.footerImageView)
+        clFooter = itemView.findViewById(R.id.footerLayout)
         tvFooter = itemView.findViewById(R.id.footerTextView)
     }
 
@@ -48,25 +54,26 @@ class RequirementItemViewHolder(
         tvReqTitle?.text = requirementItem.title
         tvReqSubtitle?.text = requirementItem.subtitle
 
+        elementsAreCollapsing = requirementItem.startCollapsed
+
         rvReqList?.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = RequirementAdapter(requirementItem.requirementsList)
         }
 
         (parent.context as? AppCompatActivity)?.windowManager?.defaultDisplay?.let { display ->
-            rvReqList?.measure(display.width, display.height)
-            requirementsHeight = rvReqList?.measuredHeight ?: 0
+            flReqList?.measure(display.width, display.height)
+            requirementsHeight = flReqList?.measuredHeight ?: 0
         }
 
-        if (requirementItem.startCollapsed) {
-            elementsAreCollapsing = true
-            updateRecyclerViewHeight()
+        if (elementsAreCollapsing) {
+            updateContainerViewHeight()
             rotateRowIndicator()
         }
 
         updateFooterText(elementsAreCollapsing)
 
-        ivFooter?.setOnClickListener { collapseElements(requirementsHeight) }
+        clFooter?.setOnClickListener { collapseElements(requirementsHeight) }
     }
 
     private fun collapseElements(requirementsHeight: Int) {
@@ -84,7 +91,7 @@ class RequirementItemViewHolder(
 
         val animator = ValueAnimator.ofInt(from, to).setDuration(300)?.apply {
             addUpdateListener {
-                updateRecyclerViewHeight(it.animatedValue as Int)
+                updateContainerViewHeight(it.animatedValue as Int)
                 rotateRowIndicator(
                     rotationValue(
                         it.animatedValue as Int,
@@ -105,8 +112,8 @@ class RequirementItemViewHolder(
         }
     }
 
-    private fun updateRecyclerViewHeight(height: Int = 0) {
-        rvReqList?.apply {
+    private fun updateContainerViewHeight(height: Int = 0) {
+        flReqList?.apply {
             layoutParams?.height = height
             requestLayout()
         }
